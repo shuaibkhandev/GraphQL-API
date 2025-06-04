@@ -1,14 +1,23 @@
+require('dotenv').config();
 const {ApolloServer} = require("@apollo/server");
 const {startStandaloneServer} = require("@apollo/server/standalone");
+const { Schema } = require("./graphql/Schema");
+const connectDB = require('./db');
+const userModel = require("./models/users");
 
 const port = 8000;
-
+connectDB();
 const server = new ApolloServer({
-    typeDefs:`type Query{hello:String!, age:String!}`,
+    typeDefs:Schema,
     resolvers:{
         Query:{
             hello : () => "Hello World!",
-            age : () => "24"
+            users: async () => {
+                const users = await userModel.find();
+                console.log(users);
+                return users
+                
+            }
         }
     }
 });
